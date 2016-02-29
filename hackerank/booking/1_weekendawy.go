@@ -109,14 +109,41 @@ type middleNode struct {
 	secondMin int
 }
 
-func (m middleNode) update(d int) {
-	if m.min == 0 || d < m.min {
+func (m *middleNode) update(d int) {
+	fmt.Println("Update", m, d)
+	if (m.min == 0) && (m.secondMin == 0) {
 		m.min = d
 		return
 	}
-	if m.secondMin == 0 || (d > m.min && d < m.secondMin) {
+	if m.secondMin == 0 {
+		m.secondMin = d
+		return
+	}
+	if (m.min == 0) || (d < m.min) {
+		m.min = d
+		return
+	}
+	if (m.secondMin == 0) || (d > m.min && d < m.secondMin) {
 		m.secondMin = d
 	}
+}
+
+func (m *middleNode) sum() int {
+	if m.min != 0 && m.secondMin != 0 {
+		return m.min + m.secondMin
+	}
+	return 99999
+
+}
+
+func getMinMiddle(nodes []middleNode) int {
+	minimum := 999999
+	for _, nm := range nodes {
+		if minimum >= nm.sum() {
+			minimum = nm.sum()
+		}
+	}
+	return minimum
 }
 
 func main() {
@@ -126,16 +153,16 @@ func main() {
 	for i := 0; i < t; i++ {
 		var n, m int
 		fmt.Scan(&n, &m)
-		var g graph
-		g.nodes = make([]node, n+1)
-		g.Edges = make([]edge, m+1)
+		nodes := make([]middleNode, n+1)
 		for j := 0; j < m; j++ {
 			var a, b, d int
 			fmt.Scan(&a, &b, &d)
-			g.addEdge(a, b, d)
+			nodes[a].update(d)
+			nodes[b].update(d)
 
 		}
-		fmt.Println(get_n_shortest_route(g))
+		fmt.Println(nodes)
+		fmt.Println(getMinMiddle(nodes))
 
 	}
 }
